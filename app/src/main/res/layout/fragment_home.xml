@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#212121"
+    android:padding="24dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Spinner
+    android:id="@+id/spinnerLine"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:backgroundTint="#64B5F6"
+    android:layout_marginBottom="16dp"
+    android:spinnerMode="dropdown"
+    android:dropDownVerticalOffset="10dp"
+    android:popupBackground="#FFFFFF"
+    android:padding="8dp" />
+
+    <EditText
+        android:id="@+id/editStation"
+        android:hint="현재 역을 선택해주세요"
+        android:textColorHint="#B0BEC5"
+        android:textColor="#FFFFFF"
+        android:background="@android:color/transparent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:padding="12dp"
+        android:backgroundTint="#64B5F6" />
+
+    <Button
+        android:id="@+id/btnSearch"
+        android:text="즐겨찾기"
+        android:textColor="#64B5F6"
+        android:background="@android:color/transparent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:padding="10dp"
+        android:backgroundTint="#64B5F6" />
+
+</LinearLayout>
