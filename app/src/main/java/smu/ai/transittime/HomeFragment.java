@@ -1,9 +1,11 @@
 package smu.ai.transittime;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,7 +22,7 @@ public class HomeFragment extends Fragment {
 
     private Spinner spinnerLine;
     private EditText editStation;
-    private Button btnSearch;
+    private Button btnTimetable, btnSchedule;
 
     @Nullable
     @Override
@@ -28,13 +30,15 @@ public class HomeFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+
         spinnerLine = view.findViewById(R.id.spinnerLine);
         editStation = view.findViewById(R.id.editStation);
-        btnSearch = view.findViewById(R.id.btnSearch);
+        btnTimetable = view.findViewById(R.id.btnTimetable);
+        btnSchedule = view.findViewById(R.id.btnSchedule);
 
-        // ✅ 노선 목록 (안내 문구 포함)
+        // ✅ 노선 목록
         List<String> subwayLines = new ArrayList<>();
-        subwayLines.add("호선을 선택해주세요"); // 안내문
+        subwayLines.add("호선을 선택하세요");
         subwayLines.add("1호선");
         subwayLines.add("2호선");
         subwayLines.add("3호선");
@@ -54,7 +58,7 @@ public class HomeFragment extends Fragment {
         subwayLines.add("신림선");
         subwayLines.add("우이신설선");
 
-        // ✅ ArrayAdapter 설정 (커스텀 스타일)
+        // ✅ Adapter (placeholder + 색상)
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
@@ -62,60 +66,79 @@ public class HomeFragment extends Fragment {
         ) {
             @Override
             public boolean isEnabled(int position) {
-                // 첫 번째 항목(안내문)은 비활성화
                 return position != 0;
             }
 
             @Override
-            public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                TextView view = (TextView) super.getDropDownView(position, convertView, parent);
+            public View getView(int position, View convertView, ViewGroup parent) {
+                TextView textView = (TextView) super.getView(position, convertView, parent);
                 if (position == 0) {
-                    // 안내문: 회색 표시
-                    view.setTextColor(0xFF9E9E9E);
+                    textView.setTextColor(0xFF9E9E9E); // placeholder 색상
                 } else {
-                    // 실제 항목: 검정색 표시
-                    view.setTextColor(0xFF000000);
+                    textView.setTextColor(0xFF64B5F6); // 선택 항목
                 }
-                return view;
+                textView.setTextSize(16);
+                return textView;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                TextView textView = (TextView) super.getDropDownView(position, convertView, parent);
+                textView.setTextSize(16);
+                if (position == 0) {
+                    textView.setTextColor(0xFF9E9E9E);
+                } else {
+                    textView.setTextColor(0xFF000000);
+                }
+                return textView;
             }
         };
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerLine.setAdapter(adapter);
-
-        // ✅ 기본 선택은 안내문
         spinnerLine.setSelection(0);
 
-        // ✅ 버튼 클릭 시 동작
-        btnSearch.setOnClickListener(v -> {
-            int pos = spinnerLine.getSelectedItemPosition();
-            String stationName = editStation.getText().toString();
+        // ✅ 버튼 클릭 시 화면 전환
+        btnTimetable.setOnClickListener(v -> {
+            if (!validateInput()) return;
+            switchToFragment(new TimetableFragment());
+        });
 
-            if (pos == 0) {
-                Toast.makeText(requireContext(), "호선을 선택해주세요!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (stationName.isEmpty()) {
-                Toast.makeText(requireContext(), "역 이름을 입력해주세요!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            String selectedLine = spinnerLine.getSelectedItem().toString();
-
-            Bundle bundle = new Bundle();
-            bundle.putString("line", selectedLine);
-            bundle.putString("station", stationName);
-
-            TimetableFragment timetableFragment = new TimetableFragment();
-            timetableFragment.setArguments(bundle);
-
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, timetableFragment)
-                    .addToBackStack(null)
-                    .commit();
+        btnSchedule.setOnClickListener(v -> {
+            if (!validateInput()) return;
+            switchToFragment(new ScheduleFragment());
         });
 
         return view;
+    }
+
+    private boolean validateInput() {
+        int pos = spinnerLine.getSelectedItemPosition();
+        String stationName = editStation.getText().toString();
+
+        if (pos == 0) {
+            Toast.makeText(requireContext(), "호선을 선택해주세요!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (stationName.isEmpty()) {
+            Toast.makeText(requireContext(), "역 이름을 입력해주세요!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private void switchToFragment(Fragment fragment) {
+        String selectedLine = spinnerLine.getSelectedItem().toString();
+        String stationName = editStation.getText().toString();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("line", selectedLine);
+        bundle.putString("station", stationName);
+        fragment.setArguments(bundle);
+
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }
