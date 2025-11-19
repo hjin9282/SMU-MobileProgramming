@@ -1,105 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:background="#212121"
-    android:padding="24dp"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#212121"
+    android:fillViewport="true">
 
     <LinearLayout
         android:orientation="vertical"
+        android:padding="24dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#212121"
-        android:padding="20dp"
-        android:layout_margin="10dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="20dp">
+        android:layout_height="wrap_content">
 
-        <!-- 🔹 호선 선택 Spinner -->
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/rounded_border"
-            android:gravity="center_vertical"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:layout_marginBottom="16dp">
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:layout_margin="10dp">
 
-            <!-- 🔍 아이콘 -->
-            <ImageView
-                android:src="@android:drawable/ic_menu_search"
-                android:tint="#64B5F6"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="8dp" />
-
-            <!-- Spinner -->
-            <Spinner
-                android:id="@+id/spinnerLine"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:spinnerMode="dropdown"
-                android:popupBackground="#FFFFFF"
-                android:dropDownVerticalOffset="10dp"
+                android:background="@drawable/rounded_border"
+                android:padding="12dp"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="20dp">
+
+                <ImageView
+                    android:src="@android:drawable/ic_menu_search"
+                    android:tint="#64B5F6"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="8dp" />
+
+                <Spinner
+                    android:id="@+id/spinnerLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown"
+                    android:tint="#64B5F6"
+                    android:popupBackground="#FFFFFF"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_border"
+                android:padding="12dp"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="20dp">
+
+                <ImageView
+                    android:src="@android:drawable/ic_menu_search"
+                    android:tint="#64B5F6"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="8dp" />
+
+                <EditText
+                    android:id="@+id/editStation"
+                    android:hint="현재 역을 입력해주세요"
+                    android:textColorHint="#64B5F6"
+                    android:textColor="#FFFFFF" android:textSize="16sp"
+                    android:background="@null"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnSearch"
+                android:text="저장하기"
+                android:textColor="#FFFFFF"
                 android:backgroundTint="#64B5F6"
-                android:layout_gravity="center_vertical" />
-        </LinearLayout>
-
-        <!-- 🔹 역 입력 -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/rounded_border"
-            android:gravity="center_vertical"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:layout_marginBottom="20dp">
-
-            <ImageView
-                android:src="@android:drawable/ic_menu_search"
-                android:tint="#64B5F6"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="8dp" />
-
-            <EditText
-                android:id="@+id/editStation"
-                android:hint="현재 역을 입력해주세요"
-                android:textColorHint="#64B5F6"
-                android:textColor="#64B5F6"
-                android:textSize="16sp"
-                android:background="@null"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:padding="10dp"
+                android:elevation="3dp" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btnTimetable"
-            android:text="시간표 보기"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#64B5F6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_marginTop="8dp"
-            android:elevation="3dp" />
-
-        <Button
-            android:id="@+id/btnSchedule"
-            android:text="도착예정시간 보기"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#64B5F6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_marginTop="8dp"
-            android:elevation="3dp" />
 
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

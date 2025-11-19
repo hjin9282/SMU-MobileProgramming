@@ -1,18 +1,33 @@
 package smu.ai.transittime;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.view.*;
+import android.widget.TextView;
+import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class ScheduleFragment extends Fragment {
+
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_schedule, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_schedule, container, false);
+
+        SharedPreferences prefs =
+                requireActivity().getSharedPreferences("subway", MODE_PRIVATE);
+
+        String line = prefs.getString("line", "정보 없음");
+        String station = prefs.getString("station", "정보 없음");
+
+        TextView txt = view.findViewById(R.id.txtResult);
+        txt.setText(line + " - " + station + " 도착정보 표시 예정");
+
+        return view;
     }
 }

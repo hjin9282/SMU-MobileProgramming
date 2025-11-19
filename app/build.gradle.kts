@@ -40,9 +40,12 @@ dependencies {
     // RecyclerView (목록 효율적으로 보여주기 위해)
     implementation("androidx.recyclerview:recyclerview:1.4.0")
     // API 통신을 위한 라이브러리
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 //    implementation("com.squarup.retrofit2:retrofit:2.9.0")
 //    implementation("com.squarup.retrofit2:converter-gson:2.9.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
 }
