@@ -19,6 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TransitTime"
+rootProject.name = "SubGo"
 include(":app")
- 
