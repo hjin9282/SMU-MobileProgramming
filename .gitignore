@@ -8,6 +8,12 @@
 .gradle/
 build/
 **/build/
+/caches
+/android
+/daemon
+/native
+/wrapper
+.tmp
 
 # Local config
 local.properties
