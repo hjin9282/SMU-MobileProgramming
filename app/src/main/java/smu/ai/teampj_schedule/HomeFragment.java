@@ -1,37 +1,93 @@
 package smu.ai.teampj_schedule;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.*;
-import android.widget.*;
-import androidx.annotation.*;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import smu.ai.teampj_schedule.api.RetrofitClient;
-import smu.ai.teampj_schedule.api.SubwayApiService;
-import smu.ai.teampj_schedule.model.StationResponse;
-import smu.ai.teampj_schedule.model.StationRow;
-
-import static android.content.Context.MODE_PRIVATE;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class HomeFragment extends Fragment {
 
     private Spinner spinnerLine;
-    private EditText editStation;
-    private Button btnSearch;
+    private TextView tvSelectedLine;
+    private EditText editTextStation;
+    private Button btnSave;
+    private ImageView dropDownIcon;
+    private LinearLayout lineBox;
 
-    // 호선별 역 목록을 저장 (키: "1호선", 값: ["서울역", "시청"...])
-    private Map<String, List<String>> lineStationMap = new HashMap<>();
+    private boolean userSelected = false;
 
-    // API 키는 key만 사용 (URL 형태 X)
-    private static final String API_KEY = "7062466f5564613233336866795056";
+
+    private String loadJSONFromAsset() {
+        try {
+            InputStream is = requireContext().getAssets().open("stations.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            return new String(buffer, StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    private JSONObject findStationInfo(String line, String station) {
+        try {
+            String jsonStr = loadJSONFromAsset();
+            JSONObject root = new JSONObject(jsonStr);
+            JSONArray data = root.getJSONArray("DATA");
+
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject obj = data.getJSONObject(i);
+
+                String fileLine = obj.getString("line_num");
+                String fileStation = obj.getString("station_nm");
+
+                if (fileLine.equals(line) && fileStation.equals(station)) {
+                    return obj;  // 매칭된 역 정보 반환
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null; // 못 찾으면 null
+    }
+
+    private String convertLine(String line) {
+        // "2호선" → 2 추출
+        String num = line.replace("호선", "");
+
+        // "02호선" 형태로 맞추기
+        if (num.length() == 1) {
+            num = "0" + num;
+        }
+
+        return num + "호선";
+    }
 
 
     @Nullable
@@ -40,184 +96,138 @@ public class HomeFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        return inflater.inflate(R.layout.fragment_home, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view,
+                              @Nullable Bundle savedInstanceState) {
 
         spinnerLine = view.findViewById(R.id.spinnerLine);
-        editStation = view.findViewById(R.id.editStation);
-        btnSearch = view.findViewById(R.id.btnSearch);
+        tvSelectedLine = view.findViewById(R.id.tvSelectedLine);
+        dropDownIcon = view.findViewById(R.id.dropDownIcon);
+        editTextStation = view.findViewById(R.id.editTextStation);
+        btnSave = view.findViewById(R.id.btnSave);
+        lineBox = view.findViewById(R.id.lineBox);
 
-        // API 데이터 로드
-        loadStationData();
-
-        // 버튼
-        setupButton();
-
-        return view;
+        setupSpinner();
+        setupEvents();
     }
 
-    /*
-        1) API 호출 -> 역 데이터 가져오기 (1-9호선 필터링 및 데이터 없을 시 더미 로드)
-    */
-    private void loadStationData() {
-        SubwayApiService api = RetrofitClient.getClient().create(SubwayApiService.class);
+    @Override
+    public void onResume() {
+        super.onResume();
 
-        api.getStations(API_KEY).enqueue(new Callback<StationResponse>() {
-            @Override
-            public void onResponse(Call<StationResponse> call, Response<StationResponse> response) {
-
-                // 1. 통신 실패 또는 기본 응답 바디가 없을 경우
-                if (!response.isSuccessful() || response.body() == null || response.body().searchInfo == null) {
-                    Log.e("API", "데이터 없음, 가짜 데이터 사용합니다.");
-                    loadDummyData();
-                    setupSpinner();
-                    return;
-                }
-
-                List<StationRow> rows = response.body().searchInfo.rows;
-                lineStationMap.clear();
-
-                // 2. 데이터가 있다면 필터링 진행
-                if (rows != null) {
-                    for (StationRow row : rows) {
-                        String lineNumber = row.lineNumber;
-                        String line;
-
-                        // '1'~'9' 또는 '01'~'09' 패턴 허용
-                        if (lineNumber != null && lineNumber.matches("^(0?[1-9])$")) {
-                            line = lineNumber.replaceAll("^0", "") + "호선";
-                        } else {
-                            continue;
-                        }
-
-                        String station = row.stationName;
-
-                        if (!lineStationMap.containsKey(line)) {
-                            lineStationMap.put(line, new ArrayList<>());
-                        }
-                        lineStationMap.get(line).add(station);
-                    }
-                }
-
-                // 3. API 통신은 성공했으나, 필터링 결과 데이터가 하나도 없는 경우 처리
-                if (lineStationMap.isEmpty()) {
-                    Log.d("API", "필터링 후 데이터 없음, 가짜 데이터 로드");
-                    loadDummyData();
-                }
-
-                setupSpinner();
-            }
-
-            @Override
-            public void onFailure(Call<StationResponse> call, Throwable t) {
-                Log.e("API", "통신 실패: " + t.getMessage());
-                loadDummyData();
-                setupSpinner();
-            }
-        });
+        tvSelectedLine.setText("호선을 선택하세요");
+        editTextStation.setText("");
+        spinnerLine.setSelection(0);
+        userSelected = false;
     }
 
-    /*
-        2) Spinner 설정 (숫자 순 정렬)
-    */
     private void setupSpinner() {
-        List<String> lines = new ArrayList<>(lineStationMap.keySet());
+        String[] lines = {
+                "호선을 선택하세요",   // 0번 인덱스 → 안내문구 (비활성화)
+                "1호선", "2호선", "3호선", "4호선",
+                "5호선", "6호선", "7호선", "8호선", "9호선"
+        };
 
-        // "1호선", "2호선"과 같이 숫자 순으로 정렬
-        Collections.sort(lines, new Comparator<String>() {
-            @Override
-            public int compare(String s1, String s2) {
-                try {
-                    // "1호선"에서 "1"을 추출하여 숫자로 비교합니다.
-                    int num1 = Integer.parseInt(s1.replaceAll("[^0-9]", ""));
-                    int num2 = Integer.parseInt(s2.replaceAll("[^0-9]", ""));
-                    return Integer.compare(num1, num2);
-                } catch (NumberFormatException e) {
-                    return s1.compareTo(s2);
-                }
-            }
-        });
-
-        lines.add(0, "호선을 선택하세요");
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 requireContext(),
-                R.layout.spinner_item_selected,
+                android.R.layout.simple_spinner_dropdown_item,
                 lines
-        );
+        ) {
+            @Override
+            public boolean isEnabled(int position) {
+                // 0번 인덱스 선택 불가 처리
+                return position != 0;
+            }
 
-        // 드롭다운 목록
-        adapter.setDropDownViewResource(R.layout.spinner_item_dropdown);
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+
+                // 안내문구는 회색 처리
+                TextView tv = (TextView) view;
+
+                view.setBackgroundColor(getResources().getColor(R.color.black, null));    // 검정 배경
+
+                if (position == 0) {
+                    tv.setTextColor(getResources().getColor(R.color.gray, null));       // 회색
+                } else {
+                    tv.setTextColor(getResources().getColor(R.color.skyBlue, null));    // 하늘색
+                }
+
+                return view;
+            }
+        };
 
         spinnerLine.setAdapter(adapter);
     }
 
-    /*
-        3) 저장하기 버튼 (역 이름 검증 로직 추가)
-    */
-    private void setupButton() {
-        btnSearch.setOnClickListener(v -> {
+    private void setupEvents() {
 
-            if (spinnerLine.getSelectedItem() == null) {
-                Toast.makeText(getContext(), "호선을 불러오는 중입니다", Toast.LENGTH_SHORT).show();
-                return;
+        View.OnClickListener openDropdown = v -> {
+            userSelected = true;
+            spinnerLine.performClick();
+        };
+
+        dropDownIcon.setOnClickListener(openDropdown);
+        tvSelectedLine.setOnClickListener(openDropdown);
+        lineBox.setOnClickListener(openDropdown);
+
+        spinnerLine.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                // 안내문구(0번) 선택 시 무시
+                if (position == 0) {
+                    tvSelectedLine.setText("호선을 선택하세요");
+                    return;
+                }
+
+                // 실제 선택일 때만 반영
+                String selected = parent.getItemAtPosition(position).toString();
+                tvSelectedLine.setText(selected);
             }
 
-            String line = spinnerLine.getSelectedItem().toString();
-            // 입력된 역 이름의 앞뒤 공백 제거
-            String station = editStation.getText().toString().trim();
-
-            if (line.equals("호선을 선택하세요")) {
-                Toast.makeText(getContext(), "호선을 선택하세요", Toast.LENGTH_SHORT).show();
-                return;
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
             }
-
-            if (station.isEmpty()) {
-                Toast.makeText(getContext(), "역 이름을 입력하세요", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // API에서 가져온 역 목록에 사용자가 입력한 역이 있는지 검증합니다.
-            List<String> stationsInLine = lineStationMap.get(line);
-
-            if (stationsInLine == null || !stationsInLine.contains(station)) {
-                // 입력된 역 이름이 해당 노선에 존재하지 않는 경우
-                String errorMsg = String.format("입력하신 '%s'역은 '%s'에 존재하지 않거나 역 이름이 정확하지 않습니다.", station, line);
-                Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            SharedPreferences prefs =
-                    requireActivity().getSharedPreferences("subway", MODE_PRIVATE);
-
-            prefs.edit()
-                    .putString("line", line)
-                    .putString("station", station)
-                    .apply();
-
-            Toast.makeText(getContext(), "저장되었습니다!", Toast.LENGTH_SHORT).show();
         });
+
+        btnSave.setOnClickListener(v -> saveValues());
     }
 
+    private void saveValues() {
 
-    // API가 안 될 때 사용할 비상용 가짜 데이터
-    private void loadDummyData() {
-        lineStationMap.clear();
+        String line = convertLine(tvSelectedLine.getText().toString());
+        String station = editTextStation.getText().toString().trim();
 
-        // 1호선 데이터 강제 주입
-        ArrayList<String> line1 = new ArrayList<>();
-        line1.add("서울");
-        line1.add("시청");
-        line1.add("종각");
-        line1.add("청량리");
-        lineStationMap.put("1호선", line1);
+        if (line.equals("호선을 선택하세요")) {
+            Toast.makeText(requireContext(), "호선을 선택하세요", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // 4호선 데이터 강제 주입
-        ArrayList<String> line4 = new ArrayList<>();
-        line4.add("숙대입구");
-        line4.add("서울");
-        line4.add("삼각지");
-        line4.add("명동");
-        lineStationMap.put("4호선", line4);
+        if (station.isEmpty()) {
+            Toast.makeText(requireContext(), "역 이름을 입력하세요", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // JSON에서 역 정보 찾기
+        JSONObject stationInfo = findStationInfo(line, station);
+
+        if (stationInfo == null) {
+            Toast.makeText(requireContext(), "해당 역을 찾을 수 없습니다", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // JSON 문자열로 저장
+        SharedPreferences prefs = requireContext().getSharedPreferences("subgo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        editor.putString("station_info", stationInfo.toString());
+        editor.apply();
+
+        Toast.makeText(requireContext(), "역 정보 저장 완료!", Toast.LENGTH_SHORT).show();
     }
 }
-

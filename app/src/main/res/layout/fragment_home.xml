@@ -10,11 +10,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:layout_margin="24dp"
+        android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/lineBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -27,17 +27,30 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginEnd="8dp"
-                android:src="@android:drawable/ic_menu_search"
-                app:tint="@color/blue" />
+                android:src="@drawable/ic_search" />
 
-            <Spinner
-                android:id="@+id/spinnerLine"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvSelectedLine"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/skyBlue"
-                android:popupBackground="@color/white"
-                android:spinnerMode="dropdown" />
+                android:layout_weight="1"
+                android:text="호선을 선택하세요"
+                android:textColor="@color/skyBlue"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/dropDownIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_arrow_drop_down"
+                app:tint="@color/blue" />
         </LinearLayout>
+
+        <Spinner
+            android:id="@+id/spinnerLine"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:spinnerMode="dropdown" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,33 +65,31 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginEnd="8dp"
-                android:src="@android:drawable/ic_menu_search"
-                app:tint="@color/blue" />
+                android:src="@drawable/ic_search" />
 
             <EditText
-                android:id="@+id/editStation"
+                android:id="@+id/editTextStation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                android:hint="현재 역을 입력해주세요"
+                android:hint="역 이름을 입력하세요"
                 android:inputType="text"
-                android:padding="8dp"
                 android:textColor="@color/white"
                 android:textColorHint="@color/skyBlue"
                 android:textSize="16sp" />
         </LinearLayout>
 
         <Button
-            android:id="@+id/btnSearch"
+            android:id="@+id/btnSave"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/skyBlue"
             android:elevation="3dp"
-            android:padding="12dp"
-            android:layout_marginTop="20dp"
+            android:padding="15dp"
             android:text="저장하기"
             android:textColor="@color/white"
-            android:textSize="18sp" />
-    </LinearLayout>
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
+    </LinearLayout>
 </LinearLayout>
