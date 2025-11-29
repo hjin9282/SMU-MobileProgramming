@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -6,14 +8,28 @@ android {
     namespace = "smu.ai.teampj_schedule"
     compileSdk = 36
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "smu.ai.teampj_schedule"
         minSdk = 35
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val localProps = gradleLocalProperties(
+            rootDir,
+            providers = providers
+        )
+
+        val timeKey = localProps.getProperty("TIMETABLE_API_KEY") ?: ""
+        val scheduleKey = localProps.getProperty("SCHEDULE_API_KEY") ?: ""
+
+        buildConfigField("String", "TIMETABLE_API_KEY", "\"$timeKey\"")
+        buildConfigField("String", "SCHEDULE_API_KEY", "\"$scheduleKey\"")
     }
 
     buildTypes {

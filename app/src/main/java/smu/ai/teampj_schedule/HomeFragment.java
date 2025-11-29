@@ -201,7 +201,8 @@ public class HomeFragment extends Fragment {
     private void saveValues() {
 
         String line = convertLine(tvSelectedLine.getText().toString());
-        String station = editTextStation.getText().toString().trim();
+        String stationRaw = editTextStation.getText().toString().trim();
+        String station = PreferenceManager.normalizeStationName(stationRaw);
 
         if (line.equals("호선을 선택하세요")) {
             Toast.makeText(requireContext(), "호선을 선택하세요", Toast.LENGTH_SHORT).show();

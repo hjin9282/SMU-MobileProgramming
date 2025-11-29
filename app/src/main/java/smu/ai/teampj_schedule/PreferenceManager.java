@@ -11,39 +11,99 @@ public class PreferenceManager {
     // 키 값 ("station_info")
     private static final String KEY_INFO = "station_info";
 
-    // 저장된 역 이름 꺼내기 (예: "숙대입구")
+    public static void saveStationInfo(Context context,
+                                       String stationName,
+                                       String lineNumber,
+                                       String stationCode) {
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("station_nm", stationName);
+            obj.put("line_num", lineNumber);
+            obj.put("station_cd", stationCode);
+
+            SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            prefs.edit().putString(KEY_INFO, obj.toString()).apply();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 저장된 역 이름 꺼내기 (예: "숙대입구역")
     public static String getStation(Context context) {
         try {
             SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
             String jsonString = prefs.getString(KEY_INFO, "");
 
-            if (jsonString.isEmpty()) return "서울역"; // 저장된 게 없으면 기본값
+            if (jsonString.isEmpty()) return "서울역";
 
-            // JSON 껍질 까기
             JSONObject jsonObject = new JSONObject(jsonString);
-            return jsonObject.getString("station_nm"); // 팀원 코드에 있는 키 이름
+            String name = jsonObject.getString("station_nm");
+
+            // 이미 '역'으로 끝나지 않으면 붙여주기
+            if (!name.endsWith("역")) {
+                name = name + "역";
+            }
+
+            return name;
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "서울역"; // 에러 나면 기본값
+            return "서울역";
         }
     }
 
-    // 저장된 호선 꺼내기 (예: "04호선")
+
+    // 저장된 호선 꺼내기 (예: "4호선")
     public static String getLine(Context context) {
         try {
             SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
             String jsonString = prefs.getString(KEY_INFO, "");
 
-            if (jsonString.isEmpty()) return "01호선"; // 기본값
+            if (jsonString.isEmpty()) return "1호선";
 
-            // JSON 데이터 꺼내오기
-            JSONObject jsonObject = new JSONObject(jsonString);
-            return jsonObject.getString("line_num"); // 팀원 코드에 있는 키 이름
+            JSONObject obj = new JSONObject(jsonString);
+            String raw = obj.getString("line_num");
+
+            // "호선" 제거
+            String num = raw.replace("호선", "");
+
+            // 숫자로 변환 (예외 방지)
+            int n = Integer.parseInt(num);
+
+            return n + "호선";
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "01호선"; // 에러 나면 기본값
+            return "1호선";
         }
     }
+
+
+    public static String getStationCode(Context context) {
+        try {
+            SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            String jsonString = prefs.getString(KEY_INFO, "");
+
+            if (jsonString.isEmpty()) return "";
+
+            JSONObject jsonObject = new JSONObject(jsonString);
+            return jsonObject.getString("station_cd");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static String normalizeStationName(String input) {
+        if (input == null) return "";
+        input = input.trim();
+
+        if (input.endsWith("역")) {
+            return input.substring(0, input.length() - 1);
+        }
+        return input;
+    }
+
 }
