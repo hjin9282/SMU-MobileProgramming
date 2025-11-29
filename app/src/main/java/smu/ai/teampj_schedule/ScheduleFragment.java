@@ -23,8 +23,7 @@ import smu.ai.teampj_schedule.model.RealtimeResponse;
 public class ScheduleFragment extends Fragment {
 
     private TextView tvTitle, tvUpTime, tvUpLocation, tvDownTime, tvDownLocation;
-    // API 키 (실시간 도착 API와 동일한 키 사용)
-    private static final String API_KEY = "7062466f5564613233336866795056";
+    private String API_KEY = BuildConfig.SCHEDULE_API_KEY;
 
     @Nullable
     @Override
