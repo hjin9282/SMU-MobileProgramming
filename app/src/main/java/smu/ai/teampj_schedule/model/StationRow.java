@@ -8,4 +8,8 @@ public class StationRow {
 
     @SerializedName("STATION_NM")
     public String stationName;
+
+    @SerializedName("STATION_CD")
+    public String stationCode;
+
 }

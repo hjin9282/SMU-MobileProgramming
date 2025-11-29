@@ -11,6 +11,24 @@ public class PreferenceManager {
     // 키 값 ("station_info")
     private static final String KEY_INFO = "station_info";
 
+    public static void saveStationInfo(Context context,
+                                       String stationName,
+                                       String lineNumber,
+                                       String stationCode) {
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("station_nm", stationName);
+            obj.put("line_num", lineNumber);
+            obj.put("station_cd", stationCode);
+
+            SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            prefs.edit().putString(KEY_INFO, obj.toString()).apply();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     // 저장된 역 이름 꺼내기 (예: "숙대입구")
     public static String getStation(Context context) {
         try {
@@ -44,6 +62,22 @@ public class PreferenceManager {
         } catch (Exception e) {
             e.printStackTrace();
             return "01호선"; // 에러 나면 기본값
+        }
+    }
+
+    public static String getStationCode(Context context) {
+        try {
+            SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            String jsonString = prefs.getString(KEY_INFO, "");
+
+            if (jsonString.isEmpty()) return "";
+
+            JSONObject jsonObject = new JSONObject(jsonString);
+            return jsonObject.getString("station_cd");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
         }
     }
 }

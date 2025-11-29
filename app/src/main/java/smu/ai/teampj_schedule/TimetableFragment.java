@@ -23,14 +23,12 @@ public class TimetableFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_timetable, container, false);
 
-        SharedPreferences prefs =
-                requireActivity().getSharedPreferences("subway", MODE_PRIVATE);
-
-        String line = prefs.getString("line", "정보 없음");
-        String station = prefs.getString("station", "정보 없음");
+        String station = PreferenceManager.getStation(getContext());
+        String line = PreferenceManager.getLine(getContext());
+        String stationCode = PreferenceManager.getStationCode(getContext());
 
         TextView txt = view.findViewById(R.id.txtResult);
-        txt.setText(line + " - " + station + " 시간표 표시 예정");
+        txt.setText(line + " - " + station + " - " + stationCode);
 
         return view;
     }
