@@ -1,5 +1,7 @@
 package smu.ai.teampj_schedule;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +17,14 @@ import smu.ai.teampj_schedule.model.TimeItem;
 public class TimeTableAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Object> items = new ArrayList<>();
+    private int highlightIndex = -1;
 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ROW = 1;
 
-    public void setItems(List<Object> list) {
+    public void setItems(List<Object> list, int highlightIndex) {
         this.items = list;
+        this.highlightIndex = highlightIndex;
         notifyDataSetChanged();
     }
 
@@ -57,10 +61,14 @@ public class TimeTableAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             h.txtTime.setText(item.time);
             h.txtDestination.setText(item.dest + "행");
 
-            if (item.express) {
-                h.labelExpress.setVisibility(View.VISIBLE);
+            if (position == highlightIndex) {
+                h.itemView.setBackgroundColor(Color.parseColor("#332196F3"));
+                h.txtTime.setTypeface(null, Typeface.BOLD);
+                h.txtDestination.setTypeface(null, Typeface.BOLD);
             } else {
-                h.labelExpress.setVisibility(View.GONE);
+                h.itemView.setBackgroundColor(Color.TRANSPARENT);
+                h.txtTime.setTypeface(null, Typeface.NORMAL);
+                h.txtDestination.setTypeface(null, Typeface.NORMAL);
             }
         }
     }

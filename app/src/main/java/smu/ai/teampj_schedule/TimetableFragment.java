@@ -133,9 +133,8 @@ public class TimetableFragment extends Fragment {
                 List<Object> finalList = groupByHour(items);
 
                 requireActivity().runOnUiThread(() -> {
-                    adapter.setItems(finalList);
-
                     int pos = findScrollPosition(finalList);
+                    adapter.setItems(finalList, pos);
 
                     recyclerView.post(() -> {
                         LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
@@ -189,8 +188,8 @@ public class TimetableFragment extends Fragment {
 
 //    private int getNowMinutes() {
 //        // ★★ 테스트용: 오후 6시(18:00) 고정
-//        int h = 18;
-//        int m = 30;
+//        int h = 17;
+//        int m = 10;
 //        return h * 60 + m;
 //    }
 
