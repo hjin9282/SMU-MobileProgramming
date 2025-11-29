@@ -47,21 +47,24 @@ public class PreferenceManager {
         }
     }
 
-    // 저장된 호선 꺼내기 (예: "04호선")
+    // 저장된 호선 꺼내기 (예: "4호선")
     public static String getLine(Context context) {
         try {
             SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
             String jsonString = prefs.getString(KEY_INFO, "");
 
-            if (jsonString.isEmpty()) return "01호선"; // 기본값
+            if (jsonString.isEmpty()) return "1호선";
 
-            // JSON 데이터 꺼내오기
             JSONObject jsonObject = new JSONObject(jsonString);
-            return jsonObject.getString("line_num"); // 팀원 코드에 있는 키 이름
+            String rawLine = jsonObject.getString("line_num");
+
+            // 앞의 0 제거 → 정수로 변환했다가 다시 문자열로
+            int lineInt = Integer.parseInt(rawLine);
+            return lineInt + "호선";
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "01호선"; // 에러 나면 기본값
+            return "1호선";
         }
     }
 
