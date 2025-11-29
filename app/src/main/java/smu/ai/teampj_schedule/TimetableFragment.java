@@ -2,6 +2,7 @@ package smu.ai.teampj_schedule;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -134,8 +136,20 @@ public class TimetableFragment extends Fragment {
 
                 requireActivity().runOnUiThread(() -> {
                     adapter.setItems(finalList);
+
+                    int pos = findScrollPosition(finalList);
+
+                    recyclerView.post(() -> {
+                        LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
+                        int rvHeight = recyclerView.getHeight();
+                        int offset = rvHeight / 2; // 현재 열차를 화면 중앙에서 보이도록 계산
+
+                        lm.scrollToPositionWithOffset(pos, offset);
+                    });
+
                 });
-            }
+
+            };
 
             @Override
             public void onFailure(Call<TimeTableResponse> call, Throwable t) {}
@@ -160,4 +174,46 @@ public class TimetableFragment extends Fragment {
 
         return result;
     }
+
+    private int toMinutes(String time) {
+        String[] parts = time.split(":");
+        int hour = Integer.parseInt(parts[0]);
+        int min = Integer.parseInt(parts[1]);
+        return hour * 60 + min;
+    }
+
+    private int getNowMinutes() {
+        Calendar cal = Calendar.getInstance();
+        int h = cal.get(Calendar.HOUR_OF_DAY);
+        int m = cal.get(Calendar.MINUTE);
+        return h * 60 + m;
+    }
+
+//    private int getNowMinutes() {
+//        // ★★ 테스트용: 오후 6시(18:00) 고정
+//        int h = 18;
+//        int m = 30;
+//        return h * 60 + m;
+//    }
+
+    private int findScrollPosition(List<Object> finalList) {
+        int nowMin = getNowMinutes();
+
+        for (int i = 0; i < finalList.size(); i++) {
+            Object obj = finalList.get(i);
+
+            if (obj instanceof TimeItem) {
+                TimeItem item = (TimeItem) obj;
+                int itemMin = toMinutes(item.time);
+
+                if (itemMin >= nowMin) {
+                    return i;
+                }
+            }
+        }
+
+        return finalList.size() - 1;
+    }
+
+
 }
