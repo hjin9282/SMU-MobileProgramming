@@ -62,18 +62,23 @@ public class PreferenceManager {
 
             if (jsonString.isEmpty()) return "1호선";
 
-            JSONObject jsonObject = new JSONObject(jsonString);
-            String rawLine = jsonObject.getString("line_num");
+            JSONObject obj = new JSONObject(jsonString);
+            String raw = obj.getString("line_num");
 
-            // 앞의 0 제거 → 정수로 변환했다가 다시 문자열로
-            int lineInt = Integer.parseInt(rawLine);
-            return lineInt + "호선";
+            // "호선" 제거
+            String num = raw.replace("호선", "");
+
+            // 숫자로 변환 (예외 방지)
+            int n = Integer.parseInt(num);
+
+            return n + "호선";
 
         } catch (Exception e) {
             e.printStackTrace();
             return "1호선";
         }
     }
+
 
     public static String getStationCode(Context context) {
         try {
