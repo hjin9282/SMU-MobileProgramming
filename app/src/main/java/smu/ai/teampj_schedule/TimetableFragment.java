@@ -2,7 +2,6 @@ package smu.ai.teampj_schedule;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +36,6 @@ public class TimetableFragment extends Fragment {
     private String stationLine;
     private String stationCode;
     private String stationName;
-    private String week = "1";   // 1: 평일 | 2: 토요앨 | 3: 일요일, 공휴일
     private String API_KEY = BuildConfig.TIMETABLE_API_KEY;
 
     @Nullable
@@ -107,7 +105,7 @@ public class TimetableFragment extends Fragment {
                 1,
                 300,
                 stationCode,
-                week,
+                getWeekType(),
                 inout
         ).enqueue(new Callback<TimeTableResponse>() {
 
@@ -215,5 +213,18 @@ public class TimetableFragment extends Fragment {
         return finalList.size() - 1;
     }
 
+    private String getWeekType() {
+        Calendar cal = Calendar.getInstance();
+        int day = cal.get(Calendar.DAY_OF_WEEK);
+
+        // 일=1, 월=2, 화=3, 수=4, 목=5, 금=6, 토=7
+        if (day == Calendar.SATURDAY) {
+            return "2"; // 토요일
+        } else if (day == Calendar.SUNDAY) {
+            return "3"; // 일요일
+        } else {
+            return "1"; // 평일
+        }
+    }
 
 }
