@@ -29,23 +29,30 @@ public class PreferenceManager {
         }
     }
 
-    // 저장된 역 이름 꺼내기 (예: "숙대입구")
+    // 저장된 역 이름 꺼내기 (예: "숙대입구역")
     public static String getStation(Context context) {
         try {
             SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
             String jsonString = prefs.getString(KEY_INFO, "");
 
-            if (jsonString.isEmpty()) return "서울역"; // 저장된 게 없으면 기본값
+            if (jsonString.isEmpty()) return "서울역";
 
-            // JSON 껍질 까기
             JSONObject jsonObject = new JSONObject(jsonString);
-            return jsonObject.getString("station_nm"); // 팀원 코드에 있는 키 이름
+            String name = jsonObject.getString("station_nm");
+
+            // 이미 '역'으로 끝나지 않으면 붙여주기
+            if (!name.endsWith("역")) {
+                name = name + "역";
+            }
+
+            return name;
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "서울역"; // 에러 나면 기본값
+            return "서울역";
         }
     }
+
 
     // 저장된 호선 꺼내기 (예: "4호선")
     public static String getLine(Context context) {
@@ -83,4 +90,15 @@ public class PreferenceManager {
             return "";
         }
     }
+
+    public static String normalizeStationName(String input) {
+        if (input == null) return "";
+        input = input.trim();
+
+        if (input.endsWith("역")) {
+            return input.substring(0, input.length() - 1);
+        }
+        return input;
+    }
+
 }
