@@ -22,6 +22,7 @@
             android:layout_marginBottom="34dp"
             android:layout_marginTop="20dp"/>
 
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,11 +59,141 @@
                     android:textStyle="bold"/>
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/tvUpSt3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="3정거장"
+                    android:textSize="10sp"
+                    android:gravity="start"
+                    android:textColor="@color/gray"/>
+
+                <TextView
+                    android:id="@+id/tvUpSt2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="2정거장"
+                    android:textSize="10sp"
+                    android:gravity="start"
+                    android:textColor="@color/gray"/>
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/tvUpSt1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="전역"
+                        android:textSize="10sp"
+                        android:layout_gravity="start"
+                        android:textColor="@color/gray"/>
+
+                    <TextView
+                        android:id="@+id/tvUpSt0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="현재역"
+                        android:textSize="10sp"
+                        android:layout_gravity="end"
+                        android:textColor="@color/skyBlue"
+                        android:textStyle="bold"/>
+                </FrameLayout>
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/viewUp_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:id="@+id/viewUpTrack"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="20dp"
+                    android:weightSum="3">
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:layout_gravity="center"
+                            android:background="#55FFFFFF"/>
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_gravity="center_vertical|start"
+                            android:background="@drawable/shape_circle_gray"/>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:layout_gravity="center"
+                            android:background="#55FFFFFF"/>
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_gravity="center_vertical|start"
+                            android:background="@drawable/shape_circle_gray"/>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:layout_gravity="center"
+                            android:background="#55FFFFFF"/>
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_gravity="center_vertical|start"
+                            android:background="@drawable/shape_circle_gray"/>
+                        <View
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:layout_gravity="center_vertical|end"
+                            android:background="@drawable/shape_circle_blue"/>
+                    </FrameLayout>
+                </LinearLayout>
+
+                <FrameLayout
+                    android:id="@+id/flUpTrainContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical" />
+
+            </FrameLayout>
+
             <TextView
                 android:id="@+id/tvUpLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="열차 위치를 불러오는 중..."
                 android:textColor="@color/gray"
                 android:textSize="14sp"
                 android:gravity="center"/>
@@ -104,11 +235,141 @@
                     android:textStyle="bold"/>
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/tvDownSt3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="3정거장"
+                    android:textSize="10sp"
+                    android:gravity="start"
+                    android:textColor="@color/gray"/>
+
+                <TextView
+                    android:id="@+id/tvDownSt2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="2정거장"
+                    android:textSize="10sp"
+                    android:gravity="start"
+                    android:textColor="@color/gray"/>
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/tvDownSt1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="전역"
+                        android:textSize="10sp"
+                        android:layout_gravity="start"
+                        android:textColor="@color/gray"/>
+
+                    <TextView
+                        android:id="@+id/tvDownSt0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="현재역"
+                        android:textSize="10sp"
+                        android:layout_gravity="end"
+                        android:textColor="@color/skyBlue"
+                        android:textStyle="bold"/>
+                </FrameLayout>
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/viewDown_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout
+                    android:id="@+id/viewDownTrack"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="20dp"
+                    android:weightSum="3">
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:layout_gravity="center"
+                            android:background="#55FFFFFF"/>
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_gravity="center_vertical|start"
+                            android:background="@drawable/shape_circle_gray"/>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:layout_gravity="center"
+                            android:background="#55FFFFFF"/>
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_gravity="center_vertical|start"
+                            android:background="@drawable/shape_circle_gray"/>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:layout_gravity="center"
+                            android:background="#55FFFFFF"/>
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_gravity="center_vertical|start"
+                            android:background="@drawable/shape_circle_gray"/>
+                        <View
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:layout_gravity="center_vertical|end"
+                            android:background="@drawable/shape_circle_blue"/>
+                    </FrameLayout>
+                </LinearLayout>
+
+                <FrameLayout
+                    android:id="@+id/flDownTrainContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical" />
+
+            </FrameLayout>
+
             <TextView
                 android:id="@+id/tvDownLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="열차 위치를 불러오는 중..."
                 android:textColor="@color/gray"
                 android:textSize="14sp"
                 android:gravity="center"/>

@@ -18,4 +18,12 @@ public class RealtimeArrival {
     // 현재 위치 (예: 서울역) -> 이걸로 열차 아이콘 위치 잡을 거야
     @SerializedName("arvlMsg3")
     public String currentLocation;
+
+    // 열차가 몇 초 후에 도착하는지 (문자열)
+    @SerializedName("barvlDt")
+    public String barvlDt;
+
+    // 도착 상태 코드
+    @SerializedName("arvlCd")
+    public String arvlCd;
 }
