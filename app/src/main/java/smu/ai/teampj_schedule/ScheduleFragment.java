@@ -242,8 +242,8 @@ public class ScheduleFragment extends Fragment {
             } catch (Exception e) {
             }
 
-            // 이미 도착해서 5초 지난 건 삭제
-            if (seconds < -5) continue;
+            // 이미 도착해서 3초 지난 건 삭제
+            if (seconds < -3) continue; 
 
             if (arrival.updnLine.equals("0") || arrival.updnLine.equals("상행") || arrival.updnLine.equals("내선")) {
                 currentUpTrains.add(arrival);
