@@ -54,6 +54,7 @@ public class FavoritesFragment extends Fragment {
                     String[] parts = item.split(" ");
                     String line = parts[0];
                     String stationName = parts[1];
+                    stationName = stationName.replace("역", "").trim();
 
                     String stationCode = StationUtils.findStationCode(
                             getContext(), line, stationName
@@ -87,11 +88,6 @@ public class FavoritesFragment extends Fragment {
         if (station == null || station.trim().isEmpty()) {
             Toast.makeText(getContext(), "홈 화면에서 역을 먼저 검색하세요!", Toast.LENGTH_SHORT).show();
             return;
-        }
-
-        // getStation()은 서울역 → 역 제거
-        if (station.endsWith("역")) {
-            station = station.substring(0, station.length() - 1);
         }
 
         PreferenceManager.addFavorite(getContext(), station, stationLine);

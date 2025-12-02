@@ -120,10 +120,7 @@ public class PreferenceManager {
     }
 
     public static void addFavorite(Context context, String stationName, String lineNumber) {
-        stationName = normalize(stationName);
-        lineNumber = lineNumber.replace("호선", "").trim();
-
-        String display = lineNumber + "호선 " + stationName;
+        String display = lineNumber + " " + stationName;
 
         List<String> list = getFavorites(context);
 
@@ -134,9 +131,7 @@ public class PreferenceManager {
     }
 
     public static void removeFavorite(Context context, String name) {
-        name = normalize(name);
         List<String> list = getFavorites(context);
-
         list.remove(name);
         saveFavorites(context, list);
     }
