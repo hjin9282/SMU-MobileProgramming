@@ -2,14 +2,16 @@ package smu.ai.teampj_schedule;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class PreferenceManager {
-    // 저장소 이름 ("subgo")
-    private static final String PREF_NAME = "subgo";
+import java.util.ArrayList;
+import java.util.List;
 
-    // 키 값 ("station_info")
+public class PreferenceManager {
+    private static final String PREF_NAME = "subgo";
     private static final String KEY_INFO = "station_info";
+    private static final String KEY_FAVORITES = "favorites";
 
     public static void saveStationInfo(Context context,
                                        String stationName,
@@ -17,7 +19,7 @@ public class PreferenceManager {
                                        String stationCode) {
         try {
             JSONObject obj = new JSONObject();
-            obj.put("station_nm", stationName);
+            obj.put("station_nm", normalize(stationName));   // ← 저장은 역 없이
             obj.put("line_num", lineNumber);
             obj.put("station_cd", stationCode);
 
@@ -29,7 +31,18 @@ public class PreferenceManager {
         }
     }
 
-    // 저장된 역 이름 꺼내기 (예: "숙대입구역")
+    // 역 제거 + 좌우 공백 제거
+    private static String normalize(String name) {
+        if (name == null) return "";
+        name = name.trim();
+
+        if (name.endsWith("역"))
+            name = name.substring(0, name.length() - 1);
+
+        return name;
+    }
+
+    // 출력할 때 역 붙임
     public static String getStation(Context context) {
         try {
             SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -38,14 +51,7 @@ public class PreferenceManager {
             if (jsonString.isEmpty()) return "서울역";
 
             JSONObject jsonObject = new JSONObject(jsonString);
-            String name = jsonObject.getString("station_nm");
-
-            // 이미 '역'으로 끝나지 않으면 붙여주기
-            if (!name.endsWith("역")) {
-                name = name + "역";
-            }
-
-            return name;
+            return jsonObject.getString("station_nm") + "역";   // ← 출력 전 붙이기
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,23 +59,31 @@ public class PreferenceManager {
         }
     }
 
+    public static String getStationCode(Context context) {
+        try {
+            SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            String jsonString = prefs.getString(KEY_INFO, "");
+            if (jsonString.isEmpty()) return "";
 
-    // 저장된 호선 꺼내기 (예: "4호선")
+            return new JSONObject(jsonString).getString("station_cd");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     public static String getLine(Context context) {
         try {
             SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
             String jsonString = prefs.getString(KEY_INFO, "");
-
             if (jsonString.isEmpty()) return "1호선";
 
             JSONObject obj = new JSONObject(jsonString);
             String raw = obj.getString("line_num");
 
-            // "호선" 제거
-            String num = raw.replace("호선", "");
-
-            // 숫자로 변환 (예외 방지)
-            int n = Integer.parseInt(num);
+            raw = raw.replace("호선", "");
+            int n = Integer.parseInt(raw);
 
             return n + "호선";
 
@@ -79,31 +93,51 @@ public class PreferenceManager {
         }
     }
 
+    public static List<String> getFavorites(Context context) {
+        SharedPreferences pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        String json = pref.getString(KEY_FAVORITES, "[]");
 
-    public static String getStationCode(Context context) {
+        List<String> list = new ArrayList<>();
         try {
-            SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-            String jsonString = prefs.getString(KEY_INFO, "");
+            JSONArray arr = new JSONArray(json);
+            for (int i = 0; i < arr.length(); i++) {
+                list.add(arr.getString(i));
+            }
+        } catch (Exception ignored) {}
 
-            if (jsonString.isEmpty()) return "";
+        return list;
+    }
 
-            JSONObject jsonObject = new JSONObject(jsonString);
-            return jsonObject.getString("station_cd");
+    public static void saveFavorites(Context context, List<String> list) {
+        SharedPreferences pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = pref.edit();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
+        JSONArray arr = new JSONArray();
+        for (String s : list) arr.put(s);
+
+        edit.putString(KEY_FAVORITES, arr.toString());
+        edit.apply();
+    }
+
+    public static void addFavorite(Context context, String stationName, String lineNumber) {
+        stationName = normalize(stationName);
+        lineNumber = lineNumber.replace("호선", "").trim();
+
+        String display = lineNumber + "호선 " + stationName;
+
+        List<String> list = getFavorites(context);
+
+        if (!list.contains(display)) {
+            list.add(display);
+            saveFavorites(context, list);
         }
     }
 
-    public static String normalizeStationName(String input) {
-        if (input == null) return "";
-        input = input.trim();
+    public static void removeFavorite(Context context, String name) {
+        name = normalize(name);
+        List<String> list = getFavorites(context);
 
-        if (input.endsWith("역")) {
-            return input.substring(0, input.length() - 1);
-        }
-        return input;
+        list.remove(name);
+        saveFavorites(context, list);
     }
-
 }

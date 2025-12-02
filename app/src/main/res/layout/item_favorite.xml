@@ -1,10 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/text1"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="20dp"
-    android:textColor="@color/white"
-    android:textSize="18sp"
+    android:layout_height="48dp"
+    android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:background="@null" />
+    android:padding="8dp"
+    android:background="@drawable/rounded_border"
+    android:layout_marginBottom="8dp">
+
+    <TextView
+        android:id="@+id/tvFavoriteName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="2호선 시청역"
+        android:textColor="@color/skyBlue"
+        android:textSize="16sp"
+        android:paddingStart="4dp"/>
+
+    <ImageButton
+        android:id="@+id/btnDeleteFavorite"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_close"
+        android:scaleType="centerInside"
+        android:padding="2dp"/>
+
+</LinearLayout>
