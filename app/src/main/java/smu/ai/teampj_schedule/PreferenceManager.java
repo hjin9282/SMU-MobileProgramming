@@ -119,20 +119,57 @@ public class PreferenceManager {
         edit.apply();
     }
 
-    public static void addFavorite(Context context, String stationName, String lineNumber) {
-        String display = lineNumber + " " + stationName;
+    public static void addFavorite(Context context, String stationName, String lineNumber, String stationCode) {
+        SharedPreferences pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = pref.edit();
 
-        List<String> list = getFavorites(context);
+        // 현재 저장된 즐겨찾기 리스트 불러오기
+        String json = pref.getString(KEY_FAVORITES, "[]");
+        List<String> list = new ArrayList<>();
 
-        if (!list.contains(display)) {
-            list.add(display);
-            saveFavorites(context, list);
+        try {
+            JSONArray arr = new JSONArray(json);
+            for (int i = 0; i < arr.length(); i++) {
+                list.add(arr.getString(i));
+            }
+        } catch (Exception ignored) {}
+
+        String raw = lineNumber + "|" + stationName + "|" + stationCode;
+
+        // 중복 저장 방지
+        if (!list.contains(raw)) {
+            list.add(raw);
         }
+
+        JSONArray arr = new JSONArray();
+        for (String s : list) arr.put(s);
+
+        edit.putString(KEY_FAVORITES, arr.toString());
+        edit.apply();
     }
 
-    public static void removeFavorite(Context context, String name) {
-        List<String> list = getFavorites(context);
-        list.remove(name);
-        saveFavorites(context, list);
+    public static void removeFavorite(Context context, String rawItem) {
+        SharedPreferences pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = pref.edit();
+
+        String json = pref.getString(KEY_FAVORITES, "[]");
+        List<String> list = new ArrayList<>();
+
+        try {
+            JSONArray arr = new JSONArray(json);
+            for (int i = 0; i < arr.length(); i++) {
+                String item = arr.getString(i);
+                if (!item.equals(rawItem)) {   // 클릭한 raw data와 동일할 때만 제거
+                    list.add(item);
+                }
+            }
+        } catch (Exception ignored) {}
+
+        JSONArray newArr = new JSONArray();
+        for (String s : list) newArr.put(s);
+
+        edit.putString(KEY_FAVORITES, newArr.toString());
+        edit.apply();
     }
+
 }
