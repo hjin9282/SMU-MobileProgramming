@@ -13,22 +13,22 @@ import java.util.List;
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.ViewHolder> {
 
-    private List<String> list;
-    private OnItemClickListener itemListener;
-    private OnDeleteClickListener deleteListener;
+    private List<String> favoriteList; // 내부 저장용
+    private final OnItemClickListener itemListener;
+    private final OnDeleteClickListener deleteListener;
 
     public interface OnItemClickListener {
-        void onClick(String item);  // 텍스트 클릭
+        void onClick(String rawData);  // 텍스트 클릭
     }
 
     public interface OnDeleteClickListener {
-        void onDelete(String item); // X 클릭
+        void onDelete(String rawData); // X 클릭
     }
 
     public FavoritesAdapter(List<String> list,
                             OnItemClickListener itemListener,
                             OnDeleteClickListener deleteListener) {
-        this.list = list;
+        this.favoriteList = list;
         this.itemListener = itemListener;
         this.deleteListener = deleteListener;
     }
@@ -42,23 +42,30 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        String item = list.get(position);
-        holder.tvFavoriteName.setText(item);
+        String raw = favoriteList.get(position);
+        String[] parts = raw.split("\\|");
+
+        String line = parts[0];
+        String name = parts[1];
+        // parts[2] = stationCode
+
+        // 화면에 표시할 텍스트
+        holder.tvFavoriteName.setText(line + " " + name + "역");
 
         // 텍스트 클릭 → 역 저장
-        holder.tvFavoriteName.setOnClickListener(v -> {
-            itemListener.onClick(item);
+        holder.itemView.setOnClickListener(v -> {
+            if (itemListener != null) itemListener.onClick(raw);
         });
 
         // X 버튼 클릭 → 삭제
         holder.btnDelete.setOnClickListener(v -> {
-            deleteListener.onDelete(item);
+            if (deleteListener != null) deleteListener.onDelete(raw);
         });
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return favoriteList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

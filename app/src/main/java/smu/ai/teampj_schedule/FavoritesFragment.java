@@ -19,7 +19,7 @@ public class FavoritesFragment extends Fragment {
 
     private RecyclerView favoriteRecycler;
     private FavoritesAdapter adapter;
-    private List<String> favoriteList;
+    private List<String> favoriteList; // 내부 저장용
     private Button btnAddFavorite;
 
     @Nullable
@@ -44,6 +44,7 @@ public class FavoritesFragment extends Fragment {
 
     private void loadFavorites() {
 
+        // 4호선|숙대입구|415 형태의 raw data
         favoriteList = PreferenceManager.getFavorites(getContext());
 
         adapter = new FavoritesAdapter(
@@ -51,52 +52,83 @@ public class FavoritesFragment extends Fragment {
 
                 // 텍스트 클릭 → 역 선택 + station_info 저장
                 item -> {
-                    String[] parts = item.split(" ");
+                    // item: 4호선|숙대입구|415
+                    String[] parts = item.split("\\|");
+                    if (parts.length < 3) {
+                        Toast.makeText(getContext(), "즐겨찾기 데이터 오류", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     String line = parts[0];
                     String stationName = parts[1];
+                    String stationCode = parts[2];
 
-                    String stationCode = StationUtils.findStationCode(
-                            getContext(), line, stationName
-                    );
-
+                    // 선택된 역 정보를 전역으로 저장
                     PreferenceManager.saveStationInfo(
                             getContext(),
-                            stationName, line, stationCode
+                            stationName,
+                            line,
+                            stationCode
                     );
 
-                    Toast.makeText(getContext(), item + " 선택됨", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), line + " " + stationName + "역 선택됨", Toast.LENGTH_SHORT).show();
                 },
 
                 // X 버튼 클릭 → 즐겨찾기 삭제
                 item -> {
+                    // raw → UI 텍스트 변환
+                    String[] parts = item.split("\\|");
+                    String line = parts[0];
+                    String name = parts[1];
+
+                    String display = line + " " + name + "역";
+
                     PreferenceManager.removeFavorite(getContext(), item);
                     loadFavorites();
-                    Toast.makeText(getContext(), item + " 삭제됨", Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(getContext(), display + " 삭제됨", Toast.LENGTH_SHORT).show();
                 }
         );
 
         favoriteRecycler.setAdapter(adapter);
     }
 
-
     // 홈 화면에서 저장된 현재 역 정보 → 즐겨찾기에 추가
     private void addFavoriteFromHome() {
-        String station = PreferenceManager.getStation(getContext());
+        String stationDisplay = PreferenceManager.getStation(getContext());
         String stationLine = PreferenceManager.getLine(getContext());
+        String stationCode = PreferenceManager.getStationCode(getContext());
 
-        if (station == null || station.trim().isEmpty()) {
+        if (stationDisplay == null || stationDisplay.trim().isEmpty()) {
             Toast.makeText(getContext(), "홈 화면에서 역을 먼저 검색하세요!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // getStation()은 서울역 → 역 제거
-        if (station.endsWith("역")) {
-            station = station.substring(0, station.length() - 1);
+        if (stationCode == null || stationCode.trim().isEmpty()) {
+            Toast.makeText(getContext(), "현재 역 코드 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        PreferenceManager.addFavorite(getContext(), station, stationLine);
+        // "숙대입구역" → "숙대입구"
+        String stationName = stationDisplay;
+        if (stationName.endsWith("역")) {
+            stationName = stationName.substring(0, stationName.length() - 1);
+        }
+        stationName = stationName.trim();
 
-        Toast.makeText(getContext(), stationLine + " " + station + " 즐겨찾기 추가됨", Toast.LENGTH_SHORT).show();
+        PreferenceManager.addFavorite(
+                getContext(),
+                stationName,
+                stationLine,
+                stationCode
+        );
+
+        Toast.makeText(
+                getContext(),
+                stationLine + " " + stationName + "역 즐겨찾기 추가됨",
+                Toast.LENGTH_SHORT
+        ).show();
+
         loadFavorites();
     }
 }
