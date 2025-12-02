@@ -202,7 +202,12 @@ public class HomeFragment extends Fragment {
 
         String line = convertLine(tvSelectedLine.getText().toString());
         String stationRaw = editTextStation.getText().toString().trim();
-        String station = PreferenceManager.normalizeStationName(stationRaw);
+        String station = stationRaw.trim();
+
+        // 끝에 "역"이 붙으면 제거
+        if (station.endsWith("역")) {
+            station = station.substring(0, station.length() - 1);
+        }
 
         if (line.equals("호선을 선택하세요")) {
             Toast.makeText(requireContext(), "호선을 선택하세요", Toast.LENGTH_SHORT).show();
