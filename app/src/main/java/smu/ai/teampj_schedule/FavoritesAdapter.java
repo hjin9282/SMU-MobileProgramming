@@ -13,15 +13,23 @@ import java.util.List;
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.ViewHolder> {
 
-    public interface OnDeleteClickListener {
-        void onDelete(String item);
+    private List<String> list;
+    private OnItemClickListener itemListener;
+    private OnDeleteClickListener deleteListener;
+
+    public interface OnItemClickListener {
+        void onClick(String item);  // 텍스트 클릭
     }
 
-    private final List<String> list;
-    private final OnDeleteClickListener deleteListener;
+    public interface OnDeleteClickListener {
+        void onDelete(String item); // X 클릭
+    }
 
-    public FavoritesAdapter(List<String> list, OnDeleteClickListener deleteListener) {
+    public FavoritesAdapter(List<String> list,
+                            OnItemClickListener itemListener,
+                            OnDeleteClickListener deleteListener) {
         this.list = list;
+        this.itemListener = itemListener;
         this.deleteListener = deleteListener;
     }
 
@@ -33,10 +41,16 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         String item = list.get(position);
-        holder.tvName.setText(item);
+        holder.tvFavoriteName.setText(item);
 
+        // 텍스트 클릭 → 역 저장
+        holder.tvFavoriteName.setOnClickListener(v -> {
+            itemListener.onClick(item);
+        });
+
+        // X 버튼 클릭 → 삭제
         holder.btnDelete.setOnClickListener(v -> {
             deleteListener.onDelete(item);
         });
@@ -48,13 +62,12 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.View
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName;
+        TextView tvFavoriteName;
         ImageButton btnDelete;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
-
-            tvName = itemView.findViewById(R.id.tvFavoriteName);
+            tvFavoriteName = itemView.findViewById(R.id.tvFavoriteName);
             btnDelete = itemView.findViewById(R.id.btnDeleteFavorite);
         }
     }

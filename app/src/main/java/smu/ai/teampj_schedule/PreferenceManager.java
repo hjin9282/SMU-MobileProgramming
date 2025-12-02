@@ -9,24 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PreferenceManager {
-
-    /* ==============================
-           1) 기본 역 정보 저장
-       ============================== */
-
     private static final String PREF_NAME = "subgo";
     private static final String KEY_INFO = "station_info";
-
-    // "역" 제거 + 좌우 공백 제거
-    private static String normalize(String name) {
-        if (name == null) return "";
-        name = name.trim();
-
-        if (name.endsWith("역"))
-            name = name.substring(0, name.length() - 1);
-
-        return name;
-    }
+    private static final String KEY_FAVORITES = "favorites";
 
     public static void saveStationInfo(Context context,
                                        String stationName,
@@ -46,7 +31,18 @@ public class PreferenceManager {
         }
     }
 
-    // "서울역"처럼 출력할 때만 역 붙임
+    // 역 제거 + 좌우 공백 제거
+    private static String normalize(String name) {
+        if (name == null) return "";
+        name = name.trim();
+
+        if (name.endsWith("역"))
+            name = name.substring(0, name.length() - 1);
+
+        return name;
+    }
+
+    // 출력할 때 역 붙임
     public static String getStation(Context context) {
         try {
             SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -97,12 +93,6 @@ public class PreferenceManager {
         }
     }
 
-    /* ==============================
-           2) 즐겨찾기 저장 기능
-       ============================== */
-
-    private static final String KEY_FAVORITES = "favorites";
-
     public static List<String> getFavorites(Context context) {
         SharedPreferences pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String json = pref.getString(KEY_FAVORITES, "[]");
@@ -142,7 +132,6 @@ public class PreferenceManager {
             saveFavorites(context, list);
         }
     }
-
 
     public static void removeFavorite(Context context, String name) {
         name = normalize(name);

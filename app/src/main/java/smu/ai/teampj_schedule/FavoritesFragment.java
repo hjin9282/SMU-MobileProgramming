@@ -43,18 +43,43 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void loadFavorites() {
+
         favoriteList = PreferenceManager.getFavorites(getContext());
 
-        adapter = new FavoritesAdapter(favoriteList, item -> {
-            PreferenceManager.removeFavorite(getContext(), item);
-            loadFavorites();
-            Toast.makeText(getContext(), item + " 삭제됨", Toast.LENGTH_SHORT).show();
-        });
+        adapter = new FavoritesAdapter(
+                favoriteList,
+
+                // 텍스트 클릭 → 역 선택 + station_info 저장
+                item -> {
+                    String[] parts = item.split(" ");
+                    String line = parts[0];
+                    String stationName = parts[1];
+
+                    String stationCode = StationUtils.findStationCode(
+                            getContext(), line, stationName
+                    );
+
+                    PreferenceManager.saveStationInfo(
+                            getContext(),
+                            stationName, line, stationCode
+                    );
+
+                    Toast.makeText(getContext(), item + " 선택됨", Toast.LENGTH_SHORT).show();
+                },
+
+                // X 버튼 클릭 → 즐겨찾기 삭제
+                item -> {
+                    PreferenceManager.removeFavorite(getContext(), item);
+                    loadFavorites();
+                    Toast.makeText(getContext(), item + " 삭제됨", Toast.LENGTH_SHORT).show();
+                }
+        );
 
         favoriteRecycler.setAdapter(adapter);
     }
 
-    // ★★★ 홈 화면에서 저장된 현재 역 정보 → 즐겨찾기에 추가
+
+    // 홈 화면에서 저장된 현재 역 정보 → 즐겨찾기에 추가
     private void addFavoriteFromHome() {
         String station = PreferenceManager.getStation(getContext());
         String stationLine = PreferenceManager.getLine(getContext());
@@ -64,7 +89,7 @@ public class FavoritesFragment extends Fragment {
             return;
         }
 
-        // getStation()은 "서울역" 형태 → "역" 제거
+        // getStation()은 서울역 → 역 제거
         if (station.endsWith("역")) {
             station = station.substring(0, station.length() - 1);
         }
