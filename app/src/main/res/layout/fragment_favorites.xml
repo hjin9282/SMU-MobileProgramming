@@ -15,8 +15,7 @@
         android:padding="15dp"
         android:text="즐겨찾기 추가"
         android:textColor="@color/white"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textSize="18sp" />
 
 
     <androidx.recyclerview.widget.RecyclerView
