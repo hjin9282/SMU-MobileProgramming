@@ -57,6 +57,8 @@ public class FavoritesFragment extends Fragment {
     // ★★★ 홈 화면에서 저장된 현재 역 정보 → 즐겨찾기에 추가
     private void addFavoriteFromHome() {
         String station = PreferenceManager.getStation(getContext());
+        String stationLine = PreferenceManager.getLine(getContext());
+
         if (station == null || station.trim().isEmpty()) {
             Toast.makeText(getContext(), "홈 화면에서 역을 먼저 검색하세요!", Toast.LENGTH_SHORT).show();
             return;
@@ -67,9 +69,9 @@ public class FavoritesFragment extends Fragment {
             station = station.substring(0, station.length() - 1);
         }
 
-        PreferenceManager.addFavorite(getContext(), station);
+        PreferenceManager.addFavorite(getContext(), station, stationLine);
 
-        Toast.makeText(getContext(), station + " 즐겨찾기 추가됨", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), stationLine + " " + station + " 즐겨찾기 추가됨", Toast.LENGTH_SHORT).show();
         loadFavorites();
     }
 }

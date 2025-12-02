@@ -129,18 +129,23 @@ public class PreferenceManager {
         edit.apply();
     }
 
-    public static void addFavorite(Context context, String name) {
-        name = normalize(name);   // ← 저장은 역 없이
+    public static void addFavorite(Context context, String stationName, String lineNumber) {
+        stationName = normalize(stationName);
+        lineNumber = lineNumber.replace("호선", "").trim();
+
+        String display = lineNumber + "호선 " + stationName;
+
         List<String> list = getFavorites(context);
 
-        if (!list.contains(name)) {
-            list.add(name);
+        if (!list.contains(display)) {
+            list.add(display);
             saveFavorites(context, list);
         }
     }
 
+
     public static void removeFavorite(Context context, String name) {
-        name = normalize(name);   // ← 동일한 규칙으로 삭제
+        name = normalize(name);
         List<String> list = getFavorites(context);
 
         list.remove(name);
