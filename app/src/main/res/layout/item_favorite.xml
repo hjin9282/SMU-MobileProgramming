@@ -5,7 +5,8 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:padding="8dp"
-    android:background="@drawable/rounded_border">
+    android:background="@drawable/rounded_border"
+    android:layout_marginBottom="8dp">
 
     <TextView
         android:id="@+id/tvFavoriteName"
@@ -13,15 +14,17 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="2호선 시청역"
-        android:textColor="@android:color/white"
-        android:textSize="15sp" />
+        android:textColor="@color/skyBlue"
+        android:textSize="16sp"
+        android:paddingStart="4dp"/>
 
     <ImageButton
         android:id="@+id/btnDeleteFavorite"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_close"
-        android:tint="#FFFFFF" />
+        android:scaleType="centerInside"
+        android:padding="2dp"/>
 
 </LinearLayout>
